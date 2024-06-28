@@ -2,6 +2,13 @@
 <html>
   <head> 
     @include('admin.css')
+    <style>
+      input[type='search']{
+        width: 500px;
+        height: 40px;
+        margin-left: 50px;
+      }
+    </style>
   </head>
   <body>
     @include('admin.header')
@@ -14,6 +21,12 @@
             <h2 class="h5 no-margin-bottom">All Products</h2>
           </div>
         </div>
+        <form action="{{url('product_search')}}" method="get">
+
+            <input type="search" name="search">
+            <input type="submit" class="btn btn-secondary" value="Search">
+
+        </form>
         <div class="table-deg pl-5 pr-5">
             <table class="table table-bordered mt-4 mx-auto">
             <tbody>
@@ -24,7 +37,9 @@
                     <th>Quantity</th>
                     <th>Category</th>
                     <th>Image</th>
+                    <th>Edit</th>
                     <th>Delete</th>
+                    
                 </tr>
                 @foreach ($products as $product)
                 <tr>
@@ -37,6 +52,9 @@
                         <img height="200px" width="200px" src="products/{{ $product->image }}">
                     </td>
                     <td>
+                      <a class = "btn btn-success" href="{{url('update_product', $product->id)}}">Edit</a>
+                    </td>
+                    <td>
                         <a class = 'btn btn-danger' href="{{ url('delete_product', $product->id) }}">Delete</a>
                     </td>
                 </tr>
@@ -45,7 +63,7 @@
         </table>
     </div>
         <div class="mt-2 pl-5 pr-5">
-            {{ $products->links() }}
+            {{ $products->onEachSide(1)->links() }}
         </div>
       </div>
     </div>

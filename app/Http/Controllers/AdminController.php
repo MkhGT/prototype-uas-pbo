@@ -72,8 +72,51 @@ class AdminController extends Controller
     public function delete_product($id)
     {
         $product = Product::find($id);
+        $image_path = public_path('products/'.$product->image);
+        if(file_exists($image_path))
+        {
+            
+            unlink($image_path);
+
+        }
+
         $product->delete();
         toastr()->timeout(10000)->closeButton()->addSuccess('Kategori berasil dihapus');
         return redirect()->back();
+    }
+
+    public function update_product($id)
+    {
+        $product = Product::find($id);
+        return view('admin.update_page',compact('product'));
+    }
+    
+    public function edit_product(Request $request, $id)
+    {
+        $product = Product::find($id);
+        $product->title = $request->title;
+        $product->description = $request->description;
+        $product->price = $request->price;
+        $product->quantity = $request->quantity;
+        $product->category = $request->category;
+        $image = $request->file('image');
+
+        if ($image) {
+            $imageName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('products'), $imageName);
+            $product->image = $imageName;
+        }
+
+        $product->save();
+
+        toastr()->timeout(10000)->closeButton()->addSuccess('Product Berhasil Diupdate');
+        return redirect()->back();
+    }
+
+    public function product_search(request $request)
+    {
+        $search = $request->search;
+        $products = product::where('title','LIKE','%'.$search.'%')->orWhere('category','LIKE','%'.$search.'%')->paginate(3);
+        return view('admin.view_product',compact('products'));
     }
 }
